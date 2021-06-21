@@ -1,16 +1,32 @@
 <template>
   <div id="home">
-    <nav-bar class="navbar"><div slot="center">购物车</div></nav-bar>
+    <nav-bar class="navbar"><div slot="center">购物街</div></nav-bar>
+    <home-swiper :cbanners="banner"></home-swiper>
   </div>
 </template>
 
 <script>
   import NavBar from 'components/common/navbar/NavBar'
+  import HomeSwiper from './childComps/HomeSwiper'
+  import {getHomeData} from 'network/home'
 
   export default {
     name:"Home",
+    data(){
+      return {
+        banner:[],
+        recommend:[]
+      }
+    },
     components: {
-      NavBar
+      NavBar,
+      HomeSwiper
+    },
+   created() {
+     getHomeData().then(res => {
+       this.banner = res.data.data.banner.list;
+       this.recommend = res.data.data.recommend.list;
+     }) 
     }
   }
 </script>
