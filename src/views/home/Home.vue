@@ -4,6 +4,7 @@
     <home-swiper :cbanners="banner"></home-swiper>
     <recommends-view :recommends="recommend"></recommends-view>
     <feature-view></feature-view>
+    <tab-control :TabItem="['流行', '新款', '精选']" class="tabcontrol"></tab-control>
     
     <ul>
       <li>ddd</li>
@@ -42,6 +43,8 @@
 
 <script>
   import NavBar from 'components/common/navbar/NavBar'
+  import TabControl from 'components/content/tabcontrol/TabControl'
+
   import HomeSwiper from './childComps/HomeSwiper'
   import RecommendsView from './childComps/RecommendsView.vue'
   import FeatureView from './childComps/FeatureView.vue'
@@ -60,7 +63,8 @@
       NavBar,
       HomeSwiper,
       RecommendsView,
-      FeatureView
+      FeatureView,
+      TabControl
     },
    created() {
      getHomeData().then(res => {
@@ -86,5 +90,10 @@
     left:0px;
     top:0px;
     z-index: 9;
+  }
+
+  .tabcontrol {
+    position:sticky;
+    top:44px;
   }
 </style>
