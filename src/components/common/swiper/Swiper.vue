@@ -115,9 +115,9 @@
       handleDom: function() {
         //1.获取要操作的元素
         let swiperEl = document.querySelector('.swiper');
-        console.log(swiperEl);
+        // console.log(swiperEl);
         let slidesEls = swiperEl.getElementsByClassName('slide');
-        console.log(slidesEls)
+        // console.log(slidesEls)
 
         //2.保存个数
         this.slideCount = slidesEls.length;
@@ -129,7 +129,7 @@
           swiperEl.insertBefore(cloneLast, slidesEls[0]);
           swiperEl.appendChild(cloneFirst);
           this.totalWidth = swiperEl.offsetWidth;  //这里的offsetWidth指的是div的宽度，其实就是屏幕的宽度
-          console.log(this.totalWidth);
+          // console.log(this.totalWidth);
           this.swiperStyle = swiperEl.style;
         }
 

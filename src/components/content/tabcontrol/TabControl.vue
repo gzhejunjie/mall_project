@@ -28,6 +28,7 @@
     methods: {
       clickTab(num) {
         this.currentIndex = num;
+        this.$emit('clickTab',num);
       }
     },
   }
