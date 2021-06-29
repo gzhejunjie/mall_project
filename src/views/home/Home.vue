@@ -1,7 +1,7 @@
 <template>
   <div id="home">
     <nav-bar class="navbar"><div slot="center">购物街</div></nav-bar>
-    <better-scroll class="content">
+    <better-scroll class="content" ref="scroll" :probeType="3" @scrollTop="contentTop">
       <home-swiper :cbanners="banner"></home-swiper>
       <recommends-view :recommends="recommend"></recommends-view>
       <feature-view></feature-view>
@@ -9,6 +9,7 @@
       <goods-list :goodsItem="showGoods"></goods-list>
     </better-scroll>
     
+    <back-top @click.native="backClick" v-show="isShowTop"/>
   </div>
 </template>
 
@@ -17,6 +18,7 @@
   import BetterScroll from 'components/common/betterscroll/BetterScroll'
   import TabControl from 'components/content/tabcontrol/TabControl'
   import GoodsList from 'components/content/goods/GoodsList'
+  import BackTop from 'components/content/backTop/BackTop'
 
   import HomeSwiper from './childComps/HomeSwiper'
   import RecommendsView from './childComps/RecommendsView.vue'
@@ -36,7 +38,8 @@
           'new':{page:0, list:[]},
           'sell':{page:0, list:[]}
         },
-        currentType:'pop'
+        currentType:'pop',
+        isShowTop:false
       }
     },
 
@@ -47,7 +50,8 @@
       FeatureView,
       TabControl,
       GoodsList,
-      BetterScroll
+      BetterScroll,
+      BackTop
     },
 
    created() {
@@ -101,6 +105,14 @@
           this.goods[type].list.push(...res.data.data.list);
           this.goods[type].page = page;
         })
+      },
+
+      backClick() {
+        this.$refs.scroll.scrollTo(0,0)
+      },
+
+      contentTop(position) {
+        this.isShowTop = (-position.y) > 1000
       }
     }
 
@@ -133,8 +145,6 @@
   }
 
   .content {
-    /* overflow: hidden; */
-
     position:absolute;
     top:44px;
     bottom: 49px;

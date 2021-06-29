@@ -16,22 +16,34 @@ import BScroll from 'better-scroll'
         scroll:null
       }
     },
+    props: {
+      probeType: {
+        type:Number,
+        default: 0
+      }
+    },
     mounted() {
       this.scroll = new BScroll(this.$refs.wrapper, {
         observeDOM:true,
         click:true,
-        probeType:3,
+        probeType:this.probeType,
         pullUpLoad:true
       })
 
       this.scroll.on('scroll', (position) => {
-        // console.log(position)
+        this.$emit('scrollTop', position)
       }),
 
       this.scroll.on('pullingUp', ()=> {
         console.log("上拉加载更多");
       })
-    }
+    },
+
+    methods: {
+      scrollTo(x, y, time=1000) {
+        this.scroll.scrollTo(x, y, time)
+      }
+    },
   }
 </script>
 
