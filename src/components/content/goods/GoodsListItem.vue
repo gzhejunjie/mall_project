@@ -1,6 +1,6 @@
 <template>
-  <div class="goods-list-item">
-    <img :src="goodsItem.show.img" alt="">
+  <div class="goods-list-item" @click="itemClick">
+    <img :src="goodsItem.show.img" alt="" @load="imgLoad">
     <div class="goods-info">
       <p>{{goodsItem.title}}</p>
       <span class="price">{{goodsItem.price}}</span>
@@ -20,7 +20,20 @@
           return {}
         }
       }
-    }
+    },
+    methods: {
+
+      /**
+       * 使用vue自带的load方法，在图片加载完成后使用事件总线发送加载完成的消息
+       */
+      imgLoad() {
+        this.$bus.$emit("imgItemLoad")
+      },
+
+      itemClick() {
+        this.$router.push('/detail/' + this.goodsItem.iid)
+      }
+    },
   }
 </script>
 

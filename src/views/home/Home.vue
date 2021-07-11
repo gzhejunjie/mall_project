@@ -1,11 +1,25 @@
 <template>
   <div id="home">
     <nav-bar class="navbar"><div slot="center">购物街</div></nav-bar>
-    <better-scroll class="content" ref="scroll" :probeType="3" @scrollTop="contentTop">
-      <home-swiper :cbanners="banner"></home-swiper>
+    <tab-control :TabItem="['流行', '新款', '精选']" 
+                    class="fixed-tabcontrol" 
+                    @clickTab="clickTab" 
+                    ref="tabControl2"
+                    v-show="isPositionFixed"></tab-control>
+    <better-scroll 
+      class="content" 
+      ref="scroll" 
+      :probe-type="3" 
+      @scrollTop="contentTop" 
+      :pull-up-load="true"
+      @pullMore="pullMore">
+      <home-swiper :cbanners="banner" @imgLoad="imgLoad"></home-swiper>
       <recommends-view :recommends="recommend"></recommends-view>
       <feature-view></feature-view>
-      <tab-control :TabItem="['流行', '新款', '精选']" class="tabcontrol" @clickTab="clickTab"></tab-control>
+      <tab-control :TabItem="['流行', '新款', '精选']" 
+                    class="tabcontrol" 
+                    @clickTab="clickTab" 
+                    ref="tabControl1"></tab-control>
       <goods-list :goodsItem="showGoods"></goods-list>
     </better-scroll>
     
@@ -25,6 +39,7 @@
   import FeatureView from './childComps/FeatureView.vue'
 
   import {getHomeData, getHomeGoods} from 'network/home'
+  import {debounce} from 'common/utils'
 
   export default {
     name:"Home",
@@ -39,7 +54,10 @@
           'sell':{page:0, list:[]}
         },
         currentType:'pop',
-        isShowTop:false
+        isShowTop:false,
+        offsetTop:0,
+        isPositionFixed:false,
+        saveY:0       //保存滚动的位置
       }
     },
 
@@ -60,6 +78,29 @@
      this.getHomeGoods('pop')
      this.getHomeGoods('new')
      this.getHomeGoods('sell')
+
+    
+    },
+
+    mounted() {
+    //在挂载的时候使用事件总线监听，并实时刷新better-scroll
+    const refresh = debounce(this.$refs.scroll.refresh, 50)
+     this.$bus.$on('imgItemLoad', () => {
+      //  console.log("refresh");
+      //  this.$refs.scroll.refresh();
+        refresh();
+        // this.debounce(this.$refs.scroll.refresh, 500)
+     })
+    },
+
+    activated() {
+      this.$refs.scroll.scrollTo(0, this.saveY, 0);
+      this.$refs.scroll.refresh();
+    },
+
+    deactivated() {
+      this.saveY = this.$refs.scroll.getScrollY();
+      console.log(this.$refs.scroll.scroll.y);
     },
 
     computed: {
@@ -85,6 +126,15 @@
             this.currentType = 'sell';
             break;
         }
+
+        this.$refs.tabControl1.currentIndex = index;
+        this.$refs.tabControl2.currentIndex = index;
+      },
+
+      //监听轮播图是否加载完成，用户tab-control的吸顶效果
+      imgLoad() {
+        console.log(this.$refs.tabControl1.$el.offsetTop);
+        this.offsetTop = this.$refs.tabControl1.$el.offsetTop;
       },
 
 
@@ -104,7 +154,11 @@
           // console.log(res);
           this.goods[type].list.push(...res.data.data.list);
           this.goods[type].page = page;
+
+          //完成下拉加载更多，通知better-scroll
+          this.$refs.scroll.finishPullUp();
         })
+
       },
 
       backClick() {
@@ -112,8 +166,18 @@
       },
 
       contentTop(position) {
-        this.isShowTop = (-position.y) > 1000
+        //1.监听是否显示backTop图标
+        this.isShowTop = (-position.y) > 1000;
+
+        //2、监听滚动位置是否大于tab-constrol需要吸顶的位置
+        this.isPositionFixed = (-position.y) > this.offsetTop;
+      },
+
+      pullMore() {
+        this.getHomeGoods(this.currentType);
       }
+
+
     }
 
   }
@@ -121,7 +185,7 @@
 
 <style scoped>
   #home {
-    padding-top: 44px;
+    /* padding-top: 44px; */
     height: 100vh;   /**设置视口高度，使用better-scroll的时候必备 */
     position: relative;
   }
@@ -131,20 +195,21 @@
     color: #fff;
     box-shadow: 0px 1px 1px rgba(100, 100, 100, .2);
 
-    position:fixed;
+    /* position:fixed;
     right: 0px;
     left:0px;
     top:0px;
-    z-index: 9;
+    z-index: 9; */
   }
 
-  .tabcontrol {
+  /* .tabcontrol {
     position:sticky;
     top:44px;
     z-index: 9;
-  }
+  } */
 
   .content {
+    overflow: hidden;
     position:absolute;
     top:44px;
     bottom: 49px;
@@ -153,4 +218,10 @@
     /* height: 300px;
     overflow: hidden; */
   }
+
+  .fixed-tabcontrol {
+    position: relative;
+    z-index: 9;
+  }
+
 </style>
