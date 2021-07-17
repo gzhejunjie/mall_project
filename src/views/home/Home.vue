@@ -39,7 +39,8 @@
   import FeatureView from './childComps/FeatureView.vue'
 
   import {getHomeData, getHomeGoods} from 'network/home'
-  import {debounce} from 'common/utils'
+  import {itemImgListener} from 'common/mixin'
+  // import {debounce} from 'common/utils'
 
   export default {
     name:"Home",
@@ -57,9 +58,12 @@
         isShowTop:false,
         offsetTop:0,
         isPositionFixed:false,
-        saveY:0       //保存滚动的位置
+        saveY:0,       //保存滚动的位置
+        // itemImgListener: null
       }
     },
+
+    
 
     components: {
       NavBar,
@@ -72,6 +76,8 @@
       BackTop
     },
 
+  mixins: [itemImgListener],
+
    created() {
      this.getHomeData()
      
@@ -83,14 +89,7 @@
     },
 
     mounted() {
-    //在挂载的时候使用事件总线监听，并实时刷新better-scroll
-    const refresh = debounce(this.$refs.scroll.refresh, 50)
-     this.$bus.$on('imgItemLoad', () => {
-      //  console.log("refresh");
-      //  this.$refs.scroll.refresh();
-        refresh();
-        // this.debounce(this.$refs.scroll.refresh, 500)
-     })
+      // console.log("混入合并")
     },
 
     activated() {
@@ -99,8 +98,12 @@
     },
 
     deactivated() {
+      //1.离开时保存上拉的Y值
       this.saveY = this.$refs.scroll.getScrollY();
-      console.log(this.$refs.scroll.scroll.y);
+      // console.log(this.$refs.scroll.scroll.y);
+
+      //2.取消全局事件监听
+      this.$bus.$off('imgItemLoad', this.itemImgListener)
     },
 
     computed: {

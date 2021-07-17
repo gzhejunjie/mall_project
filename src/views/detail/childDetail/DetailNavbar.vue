@@ -8,7 +8,9 @@
       <div slot="center" class="detail">
         <div v-for="(item, index) in titles" :key="index" 
             class="item-navbar" 
-            :class="{active: currentIndex === index}" @click="itemClick(index)">{{item}}</div>
+            :class="{active: currentIndex === index}" 
+            @click="itemClick(index)">{{item}}
+        </div>
       </div>
     </nav-bar>
   </div>
