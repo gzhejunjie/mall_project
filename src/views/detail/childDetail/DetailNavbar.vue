@@ -32,7 +32,8 @@ import NavBar from 'components/common/navbar/NavBar'
     },
     methods: {
       itemClick(index) {
-        this.currentIndex = index
+        this.currentIndex = index;
+        this.$emit('itemClick', index);
       },
       
       backClick() {

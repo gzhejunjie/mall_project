@@ -23,7 +23,7 @@
       <goods-list :goodsItem="showGoods"></goods-list>
     </better-scroll>
     
-    <back-top @click.native="backClick" v-show="isShowTop"/>
+    <back-top @click.native="backClick" v-show="isBackShow"/>
   </div>
 </template>
 
@@ -32,14 +32,14 @@
   import BetterScroll from 'components/common/betterscroll/BetterScroll'
   import TabControl from 'components/content/tabcontrol/TabControl'
   import GoodsList from 'components/content/goods/GoodsList'
-  import BackTop from 'components/content/backTop/BackTop'
+  // import BackTop from 'components/content/backTop/BackTop'
 
   import HomeSwiper from './childComps/HomeSwiper'
   import RecommendsView from './childComps/RecommendsView.vue'
   import FeatureView from './childComps/FeatureView.vue'
 
   import {getHomeData, getHomeGoods} from 'network/home'
-  import {itemImgListener} from 'common/mixin'
+  import {itemImgListener, backTopMixin} from 'common/mixin'
   // import {debounce} from 'common/utils'
 
   export default {
@@ -55,7 +55,7 @@
           'sell':{page:0, list:[]}
         },
         currentType:'pop',
-        isShowTop:false,
+        // isShowTop:false,
         offsetTop:0,
         isPositionFixed:false,
         saveY:0,       //保存滚动的位置
@@ -72,11 +72,10 @@
       FeatureView,
       TabControl,
       GoodsList,
-      BetterScroll,
-      BackTop
+      BetterScroll
     },
 
-  mixins: [itemImgListener],
+  mixins: [itemImgListener, backTopMixin],
 
    created() {
      this.getHomeData()
@@ -164,13 +163,14 @@
 
       },
 
-      backClick() {
-        this.$refs.scroll.scrollTo(0,0)
-      },
+      // backClick() {
+      //   this.$refs.scroll.scrollTo(0,0)
+      // },
 
       contentTop(position) {
         //1.监听是否显示backTop图标
-        this.isShowTop = (-position.y) > 1000;
+        // this.isBackShow = (-position.y) > 1000;
+        this.backTopListener(position)
 
         //2、监听滚动位置是否大于tab-constrol需要吸顶的位置
         this.isPositionFixed = (-position.y) > this.offsetTop;
